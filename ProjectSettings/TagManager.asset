@@ -7,6 +7,9 @@ TagManager:
   - Garbage
   - Medicine
   - Fire
+  - Bus
+  - Lamborgini
+  - Clay
   layers:
   - Default
   - TransparentFX

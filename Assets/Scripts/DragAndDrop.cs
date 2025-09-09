@@ -10,12 +10,14 @@ public class DragAndDrop : MonoBehaviour,
     private CanvasGroup canvasGro;
     private RectTransform rectTra;
     public ObjectScript objectScr;
+    private ScreenBoundriesScript screenBou;
 
 
     void Start()
     {
         canvasGro = GetComponent<CanvasGroup>();
         rectTra = GetComponent<RectTransform>();
+        screenBou = FindAnyObjectByType<ScreenBoundriesScript>();
     }
 
     public void OnPostRender()
@@ -29,7 +31,6 @@ public class DragAndDrop : MonoBehaviour,
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Debug.Log("OnEndDrag");
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -39,7 +40,22 @@ public class DragAndDrop : MonoBehaviour,
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        Debug.Log("OnBeginDrag");
+        if(Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+        {
+            objectScr.lastDragged = null;
+            canvasGro.blocksRaycasts = false;
+            canvasGro.alpha = 0.6f;
+            rectTra.SetAsLastSibling();
+            Vector3 cursorWorldPos = Camera.main.ScreenToWorldPoint(
+                new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenBou.screenPoint.z));
+            rectTra.position = cursorWorldPos;
+
+            screenBou.screenPoint = Camera.main.WorldToScreenPoint(rectTra.localPosition);
+
+            screenBou.offset = rectTra.localPosition - Camera.main.WorldToScreenPoint(
+                new Vector3(Input.mousePosition.x, Input.mousePosition.y,
+                screenBou.screenPoint.z));
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)
