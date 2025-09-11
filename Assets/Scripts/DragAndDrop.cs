@@ -1,26 +1,26 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DragAndDrop : MonoBehaviour,
-    IPointerDownHandler,
-    IBeginDragHandler,
-    IDragHandler,
-    IEndDragHandler
+public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragHandler,
+    IDragHandler, IEndDragHandler
 {
     private CanvasGroup canvasGro;
     private RectTransform rectTra;
-    public ObjectScript objectScr;
+    private ObjectScript objectScr;
     private ScreenBoundriesScript screenBou;
 
-
+    // Start is called before the first frame update
     void Start()
     {
         canvasGro = GetComponent<CanvasGroup>();
         rectTra = GetComponent<RectTransform>();
+        objectScr = FindAnyObjectByType<ObjectScript>();
         screenBou = FindAnyObjectByType<ScreenBoundriesScript>();
     }
 
-    public void OnPostRender()
+    public void OnPointerDown(PointerEventData eventData)
     {
         if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
         {
@@ -29,18 +29,9 @@ public class DragAndDrop : MonoBehaviour,
         }
     }
 
-    public void OnEndDrag(PointerEventData eventData)
-    {
-    }
-
-    public void OnDrag(PointerEventData eventData)
-    {
-        Debug.Log("OnDrag");
-    }
-
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if(Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
         {
             objectScr.lastDragged = null;
             canvasGro.blocksRaycasts = false;
@@ -52,14 +43,41 @@ public class DragAndDrop : MonoBehaviour,
 
             screenBou.screenPoint = Camera.main.WorldToScreenPoint(rectTra.localPosition);
 
-            screenBou.offset = rectTra.localPosition - Camera.main.WorldToScreenPoint(
-                new Vector3(Input.mousePosition.x, Input.mousePosition.y,
+            screenBou.offset = rectTra.localPosition -
+                Camera.main.ScreenToWorldPoint(
+                    new Vector3(Input.mousePosition.x, Input.mousePosition.y,
                 screenBou.screenPoint.z));
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnDrag(PointerEventData eventData)
     {
-        Debug.Log("OnPointerDown");
+        if (Input.GetMouseButton(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+        {
+            Vector3 curSreenPoint =
+                new Vector3(Input.mousePosition.x, Input.mousePosition.y, screenBou.screenPoint.z);
+            Vector3 curPosition = Camera.main.ScreenToWorldPoint(curSreenPoint) + screenBou.offset;
+            rectTra.position = screenBou.GetClampedPosition(curPosition);
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (Input.GetMouseButtonUp(0))
+        {
+            objectScr.lastDragged = eventData.pointerDrag;
+            canvasGro.blocksRaycasts = true;
+            canvasGro.alpha = 1.0f;
+
+            if (objectScr.rightPlace)
+            {
+                canvasGro.blocksRaycasts = false;
+                objectScr.lastDragged = null;
+
+
+            }
+
+            objectScr.rightPlace = false;
+        }
     }
 }
