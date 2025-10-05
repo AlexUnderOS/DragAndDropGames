@@ -10,6 +10,7 @@ public class ObjectScript : MonoBehaviour
     [HideInInspector] public bool rightPlace = false;
     public static GameObject lastDragged = null;
     public static bool drag = false;
+    public int placedCount = 0;
 
     private void Awake()
     {

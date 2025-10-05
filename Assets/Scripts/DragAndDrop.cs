@@ -11,7 +11,6 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
     private ObjectScript objectScr;
     private ScreenBoundriesScript screenBou;
 
-    // Start is called before the first frame update
     void Start()
     {
         canvasGro = GetComponent<CanvasGroup>();
@@ -37,7 +36,6 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
             ObjectScript.lastDragged = eventData.pointerDrag;
             canvasGro.blocksRaycasts = false;
             canvasGro.alpha = 0.6f;
-            // rectTra.SetAsLastSibling();
 
             int lastIndex = transform.parent.childCount - 1;
             int position = Mathf.Max(0, lastIndex - 1);

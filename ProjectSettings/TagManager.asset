@@ -10,6 +10,7 @@ TagManager:
   - Bus
   - Lamborgini
   - Clay
+  - Bomb
   layers:
   - Default
   - TransparentFX

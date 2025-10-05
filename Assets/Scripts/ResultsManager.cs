@@ -1,0 +1,82 @@
+using UnityEngine;
+using UnityEngine.UI;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+public class ResultsManager : MonoBehaviour
+{
+    public ObjectScript objectScript;
+    public BBordScript timerScript;
+    public GameObject resultsObject;
+    public TextMeshProUGUI currentTimeText;
+    public TextMeshProUGUI topScoresText;
+    private bool levelCompleted = false;
+    private const int TopCount = 5;
+    private const string TopScoresKey = "TopScores";
+    void Update()
+    {
+        if (levelCompleted || objectScript == null || resultsObject == null || timerScript == null) return;
+        if (ObjectScript.drag) return;
+        if (objectScript.placedCount == objectScript.vehicles.Length)
+        {
+            StartCoroutine(ActivateResultsWithDelay(0.1f));
+        }
+    }
+    private IEnumerator ActivateResultsWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (objectScript.placedCount == objectScript.vehicles.Length)
+        {
+            float finalTime = timerScript.StopTimer();
+            if (currentTimeText != null)
+            {
+                currentTimeText.text = "Jūsu laiks: " + System.TimeSpan.FromSeconds(finalTime).ToString("mm':'ss':'fff");
+            }
+            UpdateTopScores(finalTime);
+            DisplayTopScores();
+            resultsObject.SetActive(true);
+            levelCompleted = true;
+        }
+
+    }
+    private void UpdateTopScores(float newTime)
+    {
+        SortedSet<float> topScores = new SortedSet<float>();
+        for (int i = 0; i < TopCount; i++)
+        {
+            float score = PlayerPrefs.GetFloat(TopScoresKey + i, 3599.999f);
+            topScores.Add(score);
+        }
+        topScores.Add(newTime);
+        if (topScores.Count > TopCount)
+        {
+            topScores.Remove(topScores.Max);
+        }
+        float[] scoresArray = topScores.ToArray();
+        for (int i = 0; i < TopCount; i++)
+        {
+            if (i < scoresArray.Length)
+            {
+                PlayerPrefs.SetFloat(TopScoresKey + i, scoresArray[i]);
+            }
+            else
+            {
+                PlayerPrefs.SetFloat(TopScoresKey + i, 3599.999f);
+            }
+        }
+        PlayerPrefs.Save();
+    }
+    private void DisplayTopScores()
+    {
+        if (topScoresText == null) return;
+        System.Text.StringBuilder sb = new System.Text.StringBuilder("Top-5:\n");
+        for (int i = 0; i < TopCount; i++)
+        {
+            float score = PlayerPrefs.GetFloat(TopScoresKey + i, 3599.999f);
+            string timeStr = (score >= 3599.999f) ? "00:00:000" : System.TimeSpan.FromSeconds(score).ToString("mm':'ss':'fff");
+            sb.AppendLine($"{i + 1}. {timeStr}");
+        }
+        topScoresText.text = sb.ToString();
+    }
+}
