@@ -5,8 +5,8 @@ public class BBordScript : MonoBehaviour
 {
     public Text timeText;
     private float startTime;
-    private float elapsedTime; // Храним последнее значение для остановки
-    private bool isRunning = true; // Флаг для остановки
+    private float elapsedTime;
+    private bool isRunning = true;
 
     void Start()
     {
@@ -16,24 +16,22 @@ public class BBordScript : MonoBehaviour
 
     void Update()
     {
-        if (!isRunning) return; // Не обновляем, если остановлен
+        if (!isRunning) return;
 
         elapsedTime = Time.realtimeSinceStartup - startTime;
-        timeText.text = System.TimeSpan.FromSeconds(elapsedTime).ToString("mm':'ss':'fff");
+        timeText.text = System.TimeSpan.FromSeconds(elapsedTime).ToString("mm':'ss':'ff");
     }
 
-    // Метод для остановки таймера и получения финального времени (в секундах)
     public float StopTimer()
     {
         if (isRunning)
         {
             isRunning = false;
-            timeText.text = System.TimeSpan.FromSeconds(elapsedTime).ToString("mm':'ss':'fff"); // Замораживаем текст
+            timeText.text = System.TimeSpan.FromSeconds(elapsedTime).ToString("mm':'ss':'ff");
         }
         return elapsedTime;
     }
 
-    // Метод для получения текущего времени без остановки
     public float GetElapsedTime()
     {
         return elapsedTime;

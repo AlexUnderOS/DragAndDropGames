@@ -1,7 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TransformationScript : MonoBehaviour
 {
+    private float minScale = 0.7f;
+    private float maxScale = 2.5f;
+
     void Update()
     {
         if (ObjectScript.lastDragged != null)
@@ -9,64 +12,58 @@ public class TransformationScript : MonoBehaviour
             if (Input.GetKey(KeyCode.Z))
             {
                 ObjectScript.lastDragged.GetComponent<RectTransform>().transform.Rotate(
-                    0, 0, Time.deltaTime * 30f);
+                    0, 0, Time.deltaTime * 60f);
             }
 
             if (Input.GetKey(KeyCode.X))
             {
                 ObjectScript.lastDragged.GetComponent<RectTransform>().transform.Rotate(
-                    0, 0, -Time.deltaTime * 30f);
+                    0, 0, -Time.deltaTime * 60f);
             }
+
+            Vector3 currentScale = ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale;
 
             if (Input.GetKey(KeyCode.UpArrow))
             {
-                if (ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y < 0.9f)
+                if (currentScale.y < maxScale)
                 {
                     ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                        new Vector3(
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x,
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y + 0.005f,
-                        1f);
+                        new Vector3(currentScale.x, currentScale.y + 0.005f, 1f);
                 }
             }
 
             if (Input.GetKey(KeyCode.DownArrow))
             {
-                if (ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y > 0.3f)
+                if (currentScale.y > minScale)
                 {
                     ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                    new Vector3(
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x,
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y - 0.005f,
-                    1f);
+                        new Vector3(currentScale.x, currentScale.y - 0.005f, 1f);
                 }
-
             }
 
             if (Input.GetKey(KeyCode.LeftArrow))
             {
-                if (ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x > 0.3f)
+                if (currentScale.x > minScale) // Используем minScale вместо 0.3f
                 {
                     ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
                         new Vector3(
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x - 0.005f,
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y,
+                        currentScale.x - 0.005f, // Используем currentScale.x
+                        currentScale.y,          // Используем currentScale.y
                         1f);
                 }
             }
 
             if (Input.GetKey(KeyCode.RightArrow))
             {
-                if (ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x < 0.9f)
+                if (currentScale.x < maxScale) // Используем maxScale вместо 0.9f
                 {
                     ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
                         new Vector3(
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.x + 0.005f,
-                        ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale.y,
+                        currentScale.x + 0.005f, // Используем currentScale.x
+                        currentScale.y,          // Используем currentScale.y
                         1f);
                 }
             }
-
         }
     }
 }

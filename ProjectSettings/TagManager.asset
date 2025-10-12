@@ -11,6 +11,9 @@ TagManager:
   - Lamborgini
   - Clay
   - Bomb
+  - Spoon
+  - Farmer
+  - Police
   layers:
   - Default
   - TransparentFX

@@ -13,66 +13,80 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
         if ((eventData.pointerDrag != null) &&
             Input.GetMouseButtonUp(0) && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
         {
-            if (eventData.pointerDrag.tag.Equals(tag))
+            if (!eventData.pointerDrag.tag.Equals(tag))
             {
-                placeZRot = eventData.pointerDrag.GetComponent<RectTransform>().transform.eulerAngles.z;
-                vehicleZRot = GetComponent<RectTransform>().transform.eulerAngles.z;
-                rotDiff = Mathf.Abs(placeZRot - vehicleZRot);
-                Debug.Log("Rotation difference: " + rotDiff);
-
-                placeSiz = eventData.pointerDrag.GetComponent<RectTransform>().localScale;
-                vehicleSiz = GetComponent<RectTransform>().localScale;
-                xSizeDiff = Mathf.Abs(placeSiz.x - vehicleSiz.x);
-                ySizeDiff = Mathf.Abs(placeSiz.y - vehicleSiz.y);
-                Debug.Log("X size difference: " + xSizeDiff);
-                Debug.Log("Y size difference: " + ySizeDiff);
-
-                if ((rotDiff <= 5 || (rotDiff >= 355 && rotDiff <= 360)) &&
-                    xSizeDiff <= 0.05 && ySizeDiff <= 0.05)
-                {
-                    Debug.Log("Correct place");
-                    objScript.rightPlace = true;
-                    eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
-                    eventData.pointerDrag.GetComponent<RectTransform>().localRotation = GetComponent<RectTransform>().localRotation;
-                    eventData.pointerDrag.GetComponent<RectTransform>().localScale = GetComponent<RectTransform>().localScale;
-
-                    objScript.placedCount++; 
-
-                    switch (eventData.pointerDrag.tag)
-                    {
-                        case "Garbage":
-                            objScript.effects.PlayOneShot(objScript.audioCli[2]);
-                            break;
-                        case "Medicine":
-                            objScript.effects.PlayOneShot(objScript.audioCli[3]);
-                            break;
-                        case "Fire":
-                            objScript.effects.PlayOneShot(objScript.audioCli[4]);
-                            break;
-                        case "Bus":
-                            objScript.effects.PlayOneShot(objScript.audioCli[5]);
-                            break;
-                        case "Lamborgini":
-                            objScript.effects.PlayOneShot(objScript.audioCli[6]);
-                            break;
-                        case "Clay":
-                            objScript.effects.PlayOneShot(objScript.audioCli[7]);
-                            break;
-                    }
-                }
-                else
-                {
-                    objScript.rightPlace = false;
-                    objScript.effects.PlayOneShot(objScript.audioCli[1]);
-                    ResetVehiclePosition(eventData.pointerDrag.tag);
-                }
-            }
-            else
-            {
+                Debug.Log("Wrong tag. Expected: " + tag + ", Got: " + eventData.pointerDrag.tag);
                 objScript.rightPlace = false;
                 objScript.effects.PlayOneShot(objScript.audioCli[1]);
                 ResetVehiclePosition(eventData.pointerDrag.tag);
+                return;
             }
+
+            placeZRot = eventData.pointerDrag.GetComponent<RectTransform>().transform.eulerAngles.z;
+            vehicleZRot = GetComponent<RectTransform>().transform.eulerAngles.z;
+            rotDiff = Mathf.Abs(placeZRot - vehicleZRot);
+            Debug.Log("Rotation difference: " + rotDiff);
+
+            placeSiz = eventData.pointerDrag.GetComponent<RectTransform>().localScale;
+            vehicleSiz = GetComponent<RectTransform>().localScale;
+            xSizeDiff = Mathf.Abs(placeSiz.x - vehicleSiz.x);
+            ySizeDiff = Mathf.Abs(placeSiz.y - vehicleSiz.y);
+            Debug.Log("X size difference: " + xSizeDiff);
+            Debug.Log("Y size difference: " + ySizeDiff);
+
+            if ((rotDiff <= 5 || (rotDiff >= 355 && rotDiff <= 360)) &&
+                xSizeDiff <= 0.1 && ySizeDiff <= 0.1)
+            {
+                Debug.Log("Correct place - vehicle placed successfully");
+                objScript.rightPlace = true;
+                eventData.pointerDrag.GetComponent<RectTransform>().anchoredPosition = GetComponent<RectTransform>().anchoredPosition;
+                eventData.pointerDrag.GetComponent<RectTransform>().localRotation = GetComponent<RectTransform>().localRotation;
+                eventData.pointerDrag.GetComponent<RectTransform>().localScale = GetComponent<RectTransform>().localScale;
+
+                objScript.placedCount++; 
+
+                PlayCorrectSound(eventData.pointerDrag.tag);
+            }
+            else
+            {
+                Debug.Log("Right tag but wrong rotation/scale. Vehicle stays where user placed it.");
+                objScript.rightPlace = false;
+                objScript.effects.PlayOneShot(objScript.audioCli[1]);
+            }
+        }
+    }
+
+    private void PlayCorrectSound(string tag)
+    {
+        switch (tag)
+        {
+            case "Garbage":
+                objScript.effects.PlayOneShot(objScript.audioCli[2]);
+                break;
+            case "Medicine":
+                objScript.effects.PlayOneShot(objScript.audioCli[3]);
+                break;
+            case "Fire":
+                objScript.effects.PlayOneShot(objScript.audioCli[4]);
+                break;
+            case "Bus":
+                objScript.effects.PlayOneShot(objScript.audioCli[5]);
+                break;
+            case "Lamborgini":
+                objScript.effects.PlayOneShot(objScript.audioCli[6]);
+                break;
+            case "Clay":
+                objScript.effects.PlayOneShot(objScript.audioCli[7]);
+                break;
+            case "Spoon":
+                objScript.effects.PlayOneShot(objScript.audioCli[10]);
+                break;
+            case "Farmer":
+                objScript.effects.PlayOneShot(objScript.audioCli[11]);
+                break;
+            case "Police":
+                objScript.effects.PlayOneShot(objScript.audioCli[12]);
+                break;
         }
     }
 
@@ -83,7 +97,7 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
             case "Garbage":
                 objScript.vehicles[0].GetComponent<RectTransform>().localPosition = objScript.startCoor[0];
                 break;
-            case "Ambulance":
+            case "Medicine":
                 objScript.vehicles[1].GetComponent<RectTransform>().localPosition = objScript.startCoor[1];
                 break;
             case "Fire":
@@ -98,8 +112,17 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
             case "Clay":
                 objScript.vehicles[5].GetComponent<RectTransform>().localPosition = objScript.startCoor[5];
                 break;
+            case "Spoon":
+                objScript.vehicles[6].GetComponent<RectTransform>().localPosition = objScript.startCoor[6];
+                break;
+            case "Farmer":
+                objScript.vehicles[7].GetComponent<RectTransform>().localPosition = objScript.startCoor[7];
+                break;
+            case "Police":
+                objScript.vehicles[8].GetComponent<RectTransform>().localPosition = objScript.startCoor[8];
+                break;
             default:
-                Debug.Log("Unknown tag");
+                Debug.Log("Unknown tag: " + tag);
                 break;
         }
     }

@@ -155,7 +155,7 @@ public class FlyingObjectsControllerScript : MonoBehaviour
             image.color = Color.cyan;
             StartCoroutine(RecoverColor(0.5f));
 
-            objectScript.effects.PlayOneShot(objectScript.audioCli[5]);
+            objectScript.effects.PlayOneShot(objectScript.audioCli[8]);
 
             StartCoroutine(Vibrate());
         }

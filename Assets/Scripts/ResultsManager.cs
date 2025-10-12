@@ -34,6 +34,7 @@ public class ResultsManager : MonoBehaviour
                 currentTimeText.text = "Jūsu laiks: " + System.TimeSpan.FromSeconds(finalTime).ToString("mm':'ss':'fff");
             }
             UpdateTopScores(finalTime);
+            DisplayStars(finalTime);
             DisplayTopScores();
             resultsObject.SetActive(true);
             levelCompleted = true;
@@ -74,9 +75,38 @@ public class ResultsManager : MonoBehaviour
         for (int i = 0; i < TopCount; i++)
         {
             float score = PlayerPrefs.GetFloat(TopScoresKey + i, 3599.999f);
-            string timeStr = (score >= 3599.999f) ? "00:00:000" : System.TimeSpan.FromSeconds(score).ToString("mm':'ss':'fff");
-            sb.AppendLine($"{i + 1}. {timeStr}");
+            string timeStr = (score >= 3599.999f) ? "00:00:00" : System.TimeSpan.FromSeconds(score).ToString("mm':'ss':'ff");
+            sb.AppendLine($"{i + 1} - {timeStr}");
         }
         topScoresText.text = sb.ToString();
+    }
+
+
+    public GameObject[] stars;
+    public float timeForThreeStars;
+    public float timeForTwoStars;  
+    public float timeForOneStar;
+    public void DisplayStars(float finalTime)
+    {
+        foreach (GameObject star in stars)
+        {
+            star.SetActive(false);
+        }
+
+        if (finalTime <= timeForThreeStars)
+        {
+            stars[0].SetActive(true);
+            stars[1].SetActive(true);
+            stars[2].SetActive(true);
+        }
+        else if (finalTime <= timeForTwoStars)
+        {
+            stars[0].SetActive(true);
+            stars[1].SetActive(true);
+        }
+        else if (finalTime <= timeForOneStar)
+        {
+            stars[0].SetActive(true);
+        }
     }
 }

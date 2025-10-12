@@ -2,10 +2,10 @@
 
 public class CameraScript : MonoBehaviour
 {
-public float maxZoom = 1000f,  // Увеличили до 1000f (или больше, под ваш size)
+public float maxZoom = 1000f,
                  minZoom = 150f,
                  panSpeed = 6f,
-                 zoomSpeed = 50f;  // Скорость зума (подберите под себя, чтобы не было резкости)
+                 zoomSpeed = 50f;
     Vector3 bottomLeft, topRight;
     float cameraMaxX, cameraMinX, cameraMaxY, cameraMinY, x, y;
     public Camera cam;
