@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+
 public class ResultsManager : MonoBehaviour
 {
     public ObjectScript objectScript;
@@ -14,6 +15,15 @@ public class ResultsManager : MonoBehaviour
     private bool levelCompleted = false;
     private const int TopCount = 5;
     private const string TopScoresKey = "TopScores";
+
+    private FlyingObjectSpawnScript spawnScript;
+    private List<FlyingObjectsControllerScript> flyingObjects = new List<FlyingObjectsControllerScript>();
+
+    void Start()
+    {
+        spawnScript = FindAnyObjectByType<FlyingObjectSpawnScript>();
+    }
+
     void Update()
     {
         if (levelCompleted || objectScript == null || resultsObject == null || timerScript == null) return;
@@ -23,6 +33,7 @@ public class ResultsManager : MonoBehaviour
             StartCoroutine(ActivateResultsWithDelay(0.1f));
         }
     }
+
     private IEnumerator ActivateResultsWithDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -36,11 +47,70 @@ public class ResultsManager : MonoBehaviour
             UpdateTopScores(finalTime);
             DisplayStars(finalTime);
             DisplayTopScores();
+            
+            FreezeGameTime();
+            
             resultsObject.SetActive(true);
             levelCompleted = true;
         }
-
     }
+
+    private void FreezeGameTime()
+    {
+        if (spawnScript != null)
+        {
+            spawnScript.StopAllCoroutines();
+            CancelInvokeOnSpawnScript();
+        }
+
+        StopAllFlyingObjects();
+
+        Time.timeScale = 0f;
+    }
+
+    private void CancelInvokeOnSpawnScript()
+    {
+        if (spawnScript != null)
+        {
+            CancelInvoke("SpawnCloud");
+            CancelInvoke("SpawnObject");
+        }
+    }
+
+    private void StopAllFlyingObjects()
+    {
+        flyingObjects.Clear();
+        FlyingObjectsControllerScript[] allFlyingObjects = Object.FindObjectsByType<FlyingObjectsControllerScript>(FindObjectsSortMode.None);
+        flyingObjects.AddRange(allFlyingObjects);
+
+        foreach (FlyingObjectsControllerScript obj in flyingObjects)
+        {
+            if (obj != null)
+            {
+                obj.StopAllMovement();
+            }
+        }
+    }
+
+    public void ResumeGameTime()
+    {
+        Time.timeScale = 1f;
+        
+        foreach (FlyingObjectsControllerScript obj in flyingObjects)
+        {
+            if (obj != null)
+            {
+                obj.ResumeMovement();
+            }
+        }
+        flyingObjects.Clear();
+    }
+
+    public void RestartLevel()
+    {
+        Time.timeScale = 1f;
+    }
+
     private void UpdateTopScores(float newTime)
     {
         SortedSet<float> topScores = new SortedSet<float>();
@@ -68,6 +138,7 @@ public class ResultsManager : MonoBehaviour
         }
         PlayerPrefs.Save();
     }
+
     private void DisplayTopScores()
     {
         if (topScoresText == null) return;
@@ -81,11 +152,11 @@ public class ResultsManager : MonoBehaviour
         topScoresText.text = sb.ToString();
     }
 
-
     public GameObject[] stars;
     public float timeForThreeStars;
     public float timeForTwoStars;  
     public float timeForOneStar;
+    
     public void DisplayStars(float finalTime)
     {
         foreach (GameObject star in stars)
@@ -108,5 +179,10 @@ public class ResultsManager : MonoBehaviour
         {
             stars[0].SetActive(true);
         }
+    }
+
+    void OnDestroy()
+    {
+        Time.timeScale = 1f;
     }
 }

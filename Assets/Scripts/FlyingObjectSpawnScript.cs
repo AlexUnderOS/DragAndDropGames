@@ -15,15 +15,13 @@ public class FlyingObjectSpawnScript : MonoBehaviour
     public float objectMinSpeed = 2f;
     public float objectMaxSpeed = 200f;
 
-
-
     void Start()
     {
         screenBoundriesScript = FindFirstObjectByType<ScreenBoundriesScript>();
         minY = screenBoundriesScript.minY;
         maxY = screenBoundriesScript.maxY;
         InvokeRepeating(nameof(SpawnCloud), 0f, cloudSpawnInterval);
-        InvokeRepeating(nameof(SpawnObject), 0f, cloudSpawnInterval);
+        InvokeRepeating(nameof(SpawnObject), 0f, objectSpawnInterval);
     }
 
     void SpawnCloud()
@@ -56,11 +54,5 @@ public class FlyingObjectSpawnScript : MonoBehaviour
         float movementSpeed = Random.Range(objectMinSpeed, objectMaxSpeed);
         FlyingObjectsControllerScript controller = flyingObject.GetComponent<FlyingObjectsControllerScript>();
         controller.speed = -movementSpeed;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

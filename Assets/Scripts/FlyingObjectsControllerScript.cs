@@ -10,16 +10,20 @@ public class FlyingObjectsControllerScript : MonoBehaviour
     public float fadeDuration = 1.5f;
     public float waveAmplitude = 25f;
     public float waveFrequency = 1f;
+    
     private ObjectScript objectScript;
-    private ScreenBoundriesScript scrreenBoundriesScript;
+    private ScreenBoundriesScript screenBoundriesScript;
     private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
     private bool isFadingOut = false;
-    private bool isExploading = false;
+    private bool isExploding = false;
     private Image image;
     private Color originalColor;
     private Vector2 basePosition;
-    private float startTime; 
+    private float startTime;
+    
+    private bool isPaused = false;
+    private float savedSpeed;
 
     void Start()
     {
@@ -34,42 +38,54 @@ public class FlyingObjectsControllerScript : MonoBehaviour
         startTime = Time.time;
 
         image = GetComponent<Image>();
-        originalColor = image.color;
+        if (image != null)
+        {
+            originalColor = image.color;
+        }
+
         objectScript = FindFirstObjectByType<ObjectScript>();
-        scrreenBoundriesScript = FindFirstObjectByType<ScreenBoundriesScript>();
+        screenBoundriesScript = FindFirstObjectByType<ScreenBoundriesScript>();
         StartCoroutine(FadeIn());
     }
 
     void Update()
     {
+        if (isPaused) return;
+        
+        float horizontalMovement = -speed * Time.deltaTime;
         float elapsedTime = Time.time - startTime;
-        float horizontalMovement = -speed * elapsedTime;
         float waveOffset = Mathf.Sin(elapsedTime * waveFrequency) * waveAmplitude;
         
-        rectTransform.anchoredPosition = basePosition + new Vector2(horizontalMovement, waveOffset);
+        Vector2 currentPos = rectTransform.anchoredPosition;
+        rectTransform.anchoredPosition = new Vector2(currentPos.x + horizontalMovement, basePosition.y + waveOffset);
 
-        // Проверка границ
-        if (speed > 0 && rectTransform.anchoredPosition.x < (scrreenBoundriesScript.minX + 80) && !isFadingOut)
+        if (speed > 0)
         {
-            StartCoroutine(FadeOutAndDestroy());
-            isFadingOut = true;
+            if (rectTransform.anchoredPosition.x < screenBoundriesScript.minX - 4371f && !isFadingOut)
+            {
+                StartCoroutine(FadeOutAndDestroy());
+                isFadingOut = true;
+            }
+        }
+        else 
+        {
+            if (rectTransform.anchoredPosition.x > screenBoundriesScript.maxX && !isFadingOut)
+            {
+                StartCoroutine(FadeOutAndDestroy());
+                isFadingOut = true;
+            }
         }
 
-        if (speed < 0 && rectTransform.anchoredPosition.x > (scrreenBoundriesScript.maxX - 80) && !isFadingOut)
+        if (CompareTag("Bomb") && !isExploding && Input.GetMouseButtonDown(0))
         {
-            StartCoroutine(FadeOutAndDestroy());
-            isFadingOut = true;
+            if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main))
+            {
+                Debug.Log("Bomb clicked!");
+                TriggerExplosion();
+            }
         }
 
-        if(CompareTag("Bomb") && !isExploading &&
-            RectTransformUtility.RectangleContainsScreenPoint(
-                rectTransform, Input.mousePosition, Camera.main))
-        {
-            Debug.Log("The cursor collided with a bomb! (without car)");
-            TriggerExplosion();
-        }
-
-        if (ObjectScript.drag && !isFadingOut &&
+        if (ObjectScript.drag && !isFadingOut && !isExploding &&
             RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main))
         {
             Debug.Log("The cursor collided with a flying object!");
@@ -87,6 +103,30 @@ public class FlyingObjectsControllerScript : MonoBehaviour
         }
     }
 
+    public void StopAllMovement()
+    {
+        if (!isPaused)
+        {
+            isPaused = true;
+            savedSpeed = speed;
+            speed = 0f;
+            StopAllCoroutines();
+        }
+    }
+
+    public void ResumeMovement()
+    {
+        if (isPaused)
+        {
+            isPaused = false;
+            speed = savedSpeed;
+            if (!isFadingOut && !isExploding)
+            {
+                StartCoroutine(FadeIn());
+            }
+        }
+    }
+
     IEnumerator ReloadSceneAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -95,52 +135,53 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
     public void TriggerExplosion()
     {
-        if (isExploading) return;
+        if (isExploding) return;
         
-        isExploading = true;
-        objectScript.effects.PlayOneShot(objectScript.audioCli[9], 5f);
+        isExploding = true;
+        if (objectScript != null && objectScript.effects != null)
+        {
+            objectScript.effects.PlayOneShot(objectScript.audioCli[9], 5f);
+        }
 
         if (TryGetComponent<Animator>(out Animator animator))
         {
             animator.SetBool("explode", true);
         }
 
-        image.color = Color.red;
-        StartCoroutine(RecoverColor(0.4f));
+        if (image != null)
+        {
+            image.color = Color.red;
+            StartCoroutine(RecoverColor(0.4f));
+        }
 
         StartCoroutine(Vibrate());
-        StartCoroutine(WaitBeforeExpload());
         
-        StartCoroutine(ReloadSceneAfterDelay(1f));
+        float radius = 200f; 
+        ExplodeAndDestroy(radius);
+        
+        StartCoroutine(DestroyAfterExplosion(1f));
     }
 
-    IEnumerator WaitBeforeExpload()
+    IEnumerator DestroyAfterExplosion(float delay)
     {
-        float radius = 0f;
-        if (TryGetComponent<CircleCollider2D>(out CircleCollider2D circleCollider))
-        {
-            radius = circleCollider.radius * transform.lossyScale.x;
-        }
-        ExploadAndDestroy(radius);
-        yield return new WaitForSeconds(1f);
-        ExploadAndDestroy(radius);
+        yield return new WaitForSeconds(delay);
         Destroy(gameObject);
     }
 
-    void ExploadAndDestroy(float radius)
+    void ExplodeAndDestroy(float radius)
     {
         Collider2D[] hitColliders = Physics2D.OverlapCircleAll(transform.position, radius);
 
         foreach (var hitCollider in hitColliders)
         {
-           if(hitCollider != null && hitCollider.gameObject != gameObject)
+            if (hitCollider != null && hitCollider.gameObject != gameObject)
             {
                 FlyingObjectsControllerScript obj = 
                     hitCollider.gameObject.GetComponent<FlyingObjectsControllerScript>();
                 
-                if (obj != null && !obj.isExploading)
+                if (obj != null && !obj.isExploding && !obj.CompareTag("Bomb"))
                 {
-                   obj.StartToDestroy();
+                    obj.StartToDestroy();
                 }
             }
         }
@@ -148,14 +189,20 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
     public void StartToDestroy()
     {
-        if (!isFadingOut) { 
+        if (!isFadingOut && !isExploding) { 
             StartCoroutine(FadeOutAndDestroy());
             isFadingOut = true;
 
-            image.color = Color.cyan;
-            StartCoroutine(RecoverColor(0.5f));
+            if (image != null)
+            {
+                image.color = Color.cyan;
+                StartCoroutine(RecoverColor(0.5f));
+            }
 
-            objectScript.effects.PlayOneShot(objectScript.audioCli[8]);
+            if (objectScript != null && objectScript.effects != null)
+            {
+                objectScript.effects.PlayOneShot(objectScript.audioCli[8]);
+            }
 
             StartCoroutine(Vibrate());
         }
@@ -207,6 +254,8 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
     IEnumerator ShrinkAndDestroy(GameObject target, float duration)
     {
+        if (target == null) yield break;
+
         Vector3 originalScale = target.transform.localScale;
         Quaternion originalRotation = target.transform.rotation;
         float t = 0f;
@@ -226,6 +275,15 @@ public class FlyingObjectsControllerScript : MonoBehaviour
     IEnumerator RecoverColor(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        image.color = originalColor;
+        if (image != null)
+        {
+            image.color = originalColor;
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, 200f);
     }
 }

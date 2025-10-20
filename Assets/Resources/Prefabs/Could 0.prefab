@@ -106,6 +106,7 @@ MonoBehaviour:
   fadeDuration: 1.5
   waveAmplitude: 25
   waveFrequency: 1
+  cloudDestroyOffset: 67856
 --- !u!61 &8484864042979202713
 BoxCollider2D:
   m_ObjectHideFlags: 0
