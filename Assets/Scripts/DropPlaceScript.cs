@@ -51,7 +51,6 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
             {
                 Debug.Log("Right tag but wrong rotation/scale. Vehicle stays where user placed it.");
                 objScript.rightPlace = false;
-                objScript.effects.PlayOneShot(objScript.audioCli[1]);
             }
         }
     }
@@ -87,6 +86,15 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
             case "Police":
                 objScript.effects.PlayOneShot(objScript.audioCli[12]);
                 break;
+            case "Ferrari":
+                objScript.effects.PlayOneShot(objScript.audioCli[13]);
+                break;
+            case "KillerMashine":
+                objScript.effects.PlayOneShot(objScript.audioCli[14]);
+                break;
+            case "Mazda":
+                objScript.effects.PlayOneShot(objScript.audioCli[15]);
+                break;
         }
     }
 
@@ -120,6 +128,15 @@ public class DropPlaceScript : MonoBehaviour, IDropHandler
                 break;
             case "Police":
                 objScript.vehicles[8].GetComponent<RectTransform>().localPosition = objScript.startCoor[8];
+                break;
+            case "Ferrari":
+                objScript.vehicles[9].GetComponent<RectTransform>().localPosition = objScript.startCoor[9];
+                break;
+            case "KillerMashine":
+                objScript.vehicles[10].GetComponent<RectTransform>().localPosition = objScript.startCoor[10];
+                break;
+            case "Mazda":
+                objScript.vehicles[11].GetComponent<RectTransform>().localPosition = objScript.startCoor[11];
                 break;
             default:
                 Debug.Log("Unknown tag: " + tag);

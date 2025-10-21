@@ -189,22 +189,33 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
     public void StartToDestroy()
     {
-        if (!isFadingOut && !isExploding) { 
-            StartCoroutine(FadeOutAndDestroy());
-            isFadingOut = true;
-
-            if (image != null)
+        if (!isFadingOut && !isExploding) {
+            if (CompareTag("Bomb") && !isExploding)
             {
-                image.color = Color.cyan;
-                StartCoroutine(RecoverColor(0.5f));
+                if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main))
+                {
+                    TriggerExplosion();
+                    StartCoroutine(ReloadSceneAfterDelay(1f));
+                }
             }
-
-            if (objectScript != null && objectScript.effects != null)
+            else
             {
-                objectScript.effects.PlayOneShot(objectScript.audioCli[8]);
-            }
+                StartCoroutine(FadeOutAndDestroy());
+                isFadingOut = true;
 
-            StartCoroutine(Vibrate());
+                if (image != null)
+                {
+                    image.color = Color.cyan;
+                    StartCoroutine(RecoverColor(0.5f));
+                }
+
+                if (objectScript != null && objectScript.effects != null)
+                {
+                    objectScript.effects.PlayOneShot(objectScript.audioCli[8]);
+                }
+
+                StartCoroutine(Vibrate());
+            }
         }
     }
 
@@ -269,6 +280,7 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
             yield return null;
         }
+
         Destroy(target);
     }
 
