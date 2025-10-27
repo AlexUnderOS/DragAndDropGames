@@ -15,6 +15,8 @@ Drag and drop game - unity 2d drag and drop games for children +6
 - [x] Can exit and start play
 - [x] Add animated clouds, vehicles, people, animals.
 - [x] Add flying obstacles with destroy effects.
+- [ ] Change target platform to Android
+- [ ] Replace all mouse input with touch
 
 ## Starter screen
 On the main screen you can start the game by pressing button "Līmenis 1", exit the game and turn the music on or off.
