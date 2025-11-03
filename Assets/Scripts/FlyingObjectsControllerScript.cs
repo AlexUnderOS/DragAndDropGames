@@ -76,9 +76,12 @@ public class FlyingObjectsControllerScript : MonoBehaviour
             }
         }
 
+        Vector2 inputPos;
+        if (!TryGetInputPosition(out inputPos)) return;
+
         if (CompareTag("Bomb") && !isExploding && Input.GetMouseButtonDown(0))
         {
-            if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main))
+            if (RectTransformUtility.RectangleContainsScreenPoint(rectTransform, inputPos, Camera.main))
             {
                 Debug.Log("Bomb clicked!");
                 TriggerExplosion();
@@ -86,7 +89,7 @@ public class FlyingObjectsControllerScript : MonoBehaviour
         }
 
         if (ObjectScript.drag && !isFadingOut && !isExploding &&
-            RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, Camera.main))
+            RectTransformUtility.RectangleContainsScreenPoint(rectTransform, inputPos, Camera.main))
         {
             Debug.Log("The cursor collided with a flying object!");
 
@@ -103,6 +106,25 @@ public class FlyingObjectsControllerScript : MonoBehaviour
         }
     }
 
+    public bool TryGetInputPosition(out Vector2 position)
+    {
+#if UNITY_EDITOR || UNITY_STANDALONE
+        position = Input.mousePosition;
+        return true;
+
+#elif UNITY_ANDROID
+        if (Input.touchCount > 0)
+        {
+            position = Input.GetTouch(0).position;
+            return true;
+        }
+        else
+        {
+            position = Vector2.zero;
+            return false;
+        }
+#endif
+    }
     public void StopAllMovement()
     {
         if (!isPaused)
@@ -221,6 +243,9 @@ public class FlyingObjectsControllerScript : MonoBehaviour
 
     IEnumerator Vibrate()
     {
+#if UNITY_ANDROID
+        Handheld.Vibrate();
+#endif
         Vector2 originalPosition = rectTransform.anchoredPosition;
         float duration = 0.3f;
         float elapsed = 0f;

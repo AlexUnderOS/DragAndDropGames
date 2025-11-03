@@ -1,69 +1,65 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TransformationScript : MonoBehaviour
 {
-    private float minScale = 0.7f;
-    private float maxScale = 2.5f;
-
+    public float rotationSpeed = 90f;
+    public float scaleSpeed = .5f;
+    public static bool isTransforming = false;
+    private bool rotateCW, rotateCCW, scaleUpY, scaleDownY, scaleUpX, scaleDownX;
     void Update()
     {
-        if (ObjectScript.lastDragged != null)
+        if (ObjectScript.lastDragged == null) return;
+
+        RectTransform rt = ObjectScript.lastDragged.GetComponent<RectTransform>();
+
+        if(rotateCW)
         {
-            if (Input.GetKey(KeyCode.Z))
-            {
-                ObjectScript.lastDragged.GetComponent<RectTransform>().transform.Rotate(
-                    0, 0, Time.deltaTime * 60f);
-            }
-
-            if (Input.GetKey(KeyCode.X))
-            {
-                ObjectScript.lastDragged.GetComponent<RectTransform>().transform.Rotate(
-                    0, 0, -Time.deltaTime * 60f);
-            }
-
-            Vector3 currentScale = ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale;
-
-            if (Input.GetKey(KeyCode.UpArrow))
-            {
-                if (currentScale.y < maxScale)
-                {
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                        new Vector3(currentScale.x, currentScale.y + 0.005f, 1f);
-                }
-            }
-
-            if (Input.GetKey(KeyCode.DownArrow))
-            {
-                if (currentScale.y > minScale)
-                {
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                        new Vector3(currentScale.x, currentScale.y - 0.005f, 1f);
-                }
-            }
-
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
-                if (currentScale.x > minScale) // Используем minScale вместо 0.3f
-                {
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                        new Vector3(
-                        currentScale.x - 0.005f, // Используем currentScale.x
-                        currentScale.y,          // Используем currentScale.y
-                        1f);
-                }
-            }
-
-            if (Input.GetKey(KeyCode.RightArrow))
-            {
-                if (currentScale.x < maxScale) // Используем maxScale вместо 0.9f
-                {
-                    ObjectScript.lastDragged.GetComponent<RectTransform>().transform.localScale =
-                        new Vector3(
-                        currentScale.x + 0.005f, // Используем currentScale.x
-                        currentScale.y,          // Используем currentScale.y
-                        1f);
-                }
-            }
+            rt.Rotate(0, 0, -rotationSpeed * Time.deltaTime);
         }
+
+        if (rotateCCW)
+        {
+            rt.Rotate(0, 0, rotationSpeed * Time.deltaTime);
+        }
+
+        if (scaleUpY && rt.localScale.y < 0.9f)
+        {
+            rt.localScale += new Vector3(0, scaleSpeed * Time.deltaTime, 0);
+        }
+        if (scaleDownY && rt.localScale.y > 0.35f)
+        {
+            rt.localScale -= new Vector3(0, scaleSpeed * Time.deltaTime, 0);
+        }
+
+
+        if (scaleUpX && rt.localScale.x < 0.9f)
+        {
+            rt.localScale += new Vector3(scaleSpeed * Time.deltaTime, 0, 0);
+        }
+        if (scaleDownX && rt.localScale.x > 0.35f)
+        {
+            rt.localScale -= new Vector3(scaleSpeed * Time.deltaTime, 0, 0);
+        }
+
+        isTransforming = rotateCW || rotateCCW || scaleUpY || scaleDownY || scaleUpX || scaleDownX;
     }
+
+    public void StartRotateCW (BaseEventData data) { rotateCW = true; }
+    public void StopRotateCW (BaseEventData data) { rotateCW = false; }
+
+    public void StartRotateCCW(BaseEventData data) { rotateCCW = true; }
+    public void StopRotateCCW(BaseEventData data) { rotateCCW = false; }
+
+    public void StartScaleUpY(BaseEventData data) { scaleUpY = true; }
+    public void StopScaleUpY(BaseEventData data) { scaleUpY = false; }
+
+    public void StartScaleDownY(BaseEventData data) { scaleDownY = true; }
+    public void StopScaleDownY(BaseEventData data) { scaleDownY = false; }
+
+    public void StartScaleUpX(BaseEventData data) { scaleUpX = true; }
+    public void StopScaleUpX(BaseEventData data) { scaleUpX = false; }
+
+    public void StartScaleDownX(BaseEventData data) { scaleDownX = true; }
+    public void StopScaleDownX(BaseEventData data) { scaleDownX = false; }
 }
