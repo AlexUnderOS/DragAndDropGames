@@ -60,42 +60,32 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
         ObjectScript.lastDragged = eventData.pointerDrag;
         canvasGro.blocksRaycasts = false;
         canvasGro.alpha = 0.6f;
-        //rectTra.SetAsLastSibling();
-        int lastIndex = transform.parent.childCount - 1;
-        int position = Mathf.Max(0, lastIndex - 1);
-        transform.SetSiblingIndex(position);
 
-        Vector3 pointerWorld;
+        transform.SetAsLastSibling();
 
-        if (ScreenPointToWorld(eventData.position, out pointerWorld))
-        {
-            dragOffsetWorld = transform.position - pointerWorld;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTra.parent as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out Vector2 localPoint
+        );
 
-        }
-        else
-        {
-            dragOffsetWorld = Vector3.zero;
-        }
-
-        ObjectScript.lastDragged = eventData.pointerDrag;
+        rectTra.localPosition = localPoint;
     }
+
 
 
     // CHANGES FOR ANDROID
     public void OnDrag(PointerEventData eventData)
     {
-        Vector3 pointerWorld;
-
-        if (!ScreenPointToWorld(eventData.position, out pointerWorld))
-            return;
-
-        Vector3 desiredPosition = pointerWorld + dragOffsetWorld;
-        desiredPosition.z = transform.position.z;
-
-        screenBou.RecalculateBounds();
-
-        Vector2 clamped = screenBou.GetClampedPosition(desiredPosition);
-        transform.position = new Vector3(clamped.x, clamped.y, desiredPosition.z);
+        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            rectTra.parent as RectTransform,
+            eventData.position,
+            eventData.pressEventCamera,
+            out Vector2 localPoint))
+        {
+            rectTra.localPosition = localPoint;
+        }
     }
 
     // CHANGES FOR ANDROID
@@ -114,7 +104,7 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
 
         objectScr.rightPlace = false;
     }
-
+    /*
     private bool ScreenPointToWorld(Vector2 screenPoint, out Vector3 worldPoint)
     {
         worldPoint = Vector3.zero;
@@ -129,5 +119,5 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
         worldPoint = uiCamera.ScreenToWorldPoint(sp);
 
         return true;
-    }
+    } */
 }

@@ -15,7 +15,7 @@ public class CameraScript : MonoBehaviour
     public Camera cam;
     float startZoom;
     Vector2 lastTouchPos;
-    int panFingerId = -1;
+    public int panFingerId = -1;
     bool isTouchPanning = false;
 
     float lastTapTime = 0f;
@@ -37,12 +37,14 @@ public class CameraScript : MonoBehaviour
     Vector3 bottomLeft, topRight;
     float cameraMaxX, cameraMinX, cameraMaxY, cameraMinY, x, y;
 
-    void Start()
+    IEnumerator Start()
     {
+        yield return null;
+
         startZoom = cam.orthographicSize;
+
         screenBoundriesScript.RecalculateBounds();
         transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
-
     }
 
     // Update is called once per frame
@@ -54,21 +56,25 @@ public class CameraScript : MonoBehaviour
 #if UNITY_EDITOR || UNITY_STANDALONE
         DesktopFollowCursor();
         float scroll = Input.GetAxis("Mouse ScrollWheel");
-        if ( Mathf.Abs(scroll) > Mathf.Epsilon)
+        if (Mathf.Abs(scroll) > Mathf.Epsilon)
         {
             cam.orthographicSize -= scroll * mouseZoomSpeed;
         }
 #else
-        HandleTouch();
+    HandleTouch();
 #endif
 
         if (Input.touchCount == 2) HandlePinch();
 
         cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
-        screenBoundriesScript.RecalculateBounds();
+
+        if (Mathf.Approximately(screenBoundriesScript.minY, 0f) &&
+            Mathf.Approximately(screenBoundriesScript.maxY, 0f))
+        {
+            screenBoundriesScript.RecalculateBounds();
+        }
 
         transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
-
     }
 
     void DesktopFollowCursor()
@@ -82,7 +88,6 @@ public class CameraScript : MonoBehaviour
         Vector3 targetWorld = cam.ScreenToWorldPoint(screenPoint);
         Vector3 desired = new Vector3(targetWorld.x, targetWorld.y, transform.position.z);
 
-        //Remember to change for slowmotion
         transform.position =
             Vector3.Lerp(transform.position, desired, mouseFollowSpeed * Time.deltaTime);
     }

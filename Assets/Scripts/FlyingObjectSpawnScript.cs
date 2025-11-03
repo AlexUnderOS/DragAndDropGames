@@ -24,6 +24,17 @@ public class FlyingObjectSpawnScript : MonoBehaviour
         InvokeRepeating(nameof(SpawnObject), 0f, objectSpawnInterval);
     }
 
+    void Update()
+    {
+        if (Mathf.Approximately(minY, 0f) && Mathf.Approximately(maxY, 0f))
+        {
+            Vector3 bottomLeft = Camera.main.ViewportToWorldPoint(new Vector3(0, 0, Camera.main.nearClipPlane));
+            Vector3 topRight = Camera.main.ViewportToWorldPoint(new Vector3(1, 1, Camera.main.nearClipPlane));
+            minY = bottomLeft.y;
+            maxY = topRight.y;
+        }
+    }
+
     void SpawnCloud()
     {
         if (cloudPrefabs.Length == 0)
@@ -39,7 +50,7 @@ public class FlyingObjectSpawnScript : MonoBehaviour
         FlyingObjectsControllerScript controller = cloud.GetComponent<FlyingObjectsControllerScript>();
         controller.speed = movementSpeed;
     }
- 
+
     void SpawnObject()
     {
         if (objectPrefabs.Length == 0)
