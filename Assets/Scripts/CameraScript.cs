@@ -172,9 +172,12 @@ public class CameraScript : MonoBehaviour
         float elapsed = 0f;
         float initialZoom = cam.orthographicSize;
 
+        float targetZoom = maxZoom;
+
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
+            cam.orthographicSize = Mathf.Lerp(initialZoom, targetZoom, elapsed / duration);
             screenBoundriesScript.RecalculateBounds();
             transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
             yield return null;
@@ -183,5 +186,15 @@ public class CameraScript : MonoBehaviour
         cam.orthographicSize = startZoom;
         screenBoundriesScript.RecalculateBounds();
         transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
+    }
+
+    void UpdateMaxZoom()
+    {
+        if (screenBoundriesScript == null || cam == null)
+            return;
+        Rect wb = screenBoundriesScript.worldBounds;
+        float maxZoomHeight = wb.height / 2f;
+        float maxZoomWidth = (wb.width / 2f) / cam.aspect;
+        maxZoom = Mathf.Min(maxZoomHeight, maxZoomWidth);
     }
 }
