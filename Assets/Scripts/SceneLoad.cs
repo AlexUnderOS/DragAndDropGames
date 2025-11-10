@@ -4,15 +4,17 @@ using UnityEngine.SceneManagement;
 
 public class SceneLoad : MonoBehaviour
 {
+
     public void LoadScene(string name)
     {
         SceneManager.LoadScene(name);
     }
 
-    public async void LoadWithDelayScene(string name)
+    public void LoadWithAd(string targetScene)
     {
-        await Task.Delay(2000);
-        SceneManager.LoadScene(name);
+        PlayerPrefs.SetString("NextSceneAfterAd", targetScene);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene("AdScene");
     }
 
     public void Exit()

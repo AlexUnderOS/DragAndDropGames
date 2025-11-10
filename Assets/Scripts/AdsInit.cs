@@ -21,9 +21,7 @@ public class AdsInit : MonoBehaviour, IUnityAdsInitializationListener
 #endif
 
         if (!Advertisement.isInitialized && Advertisement.isSupported)
-        {
             Advertisement.Initialize(_gameId, _testMode, this);
-        }
     }
 
     public void OnInitializationComplete()
@@ -34,6 +32,6 @@ public class AdsInit : MonoBehaviour, IUnityAdsInitializationListener
 
     public void OnInitializationFailed(UnityAdsInitializationError error, string message)
     {
-        Debug.LogWarning($"Unity ads initialization failed: {error} - {message}");
+        Debug.LogWarning($"Unity ads initialization failed: {error.ToString()} - {message}");
     }
 }
