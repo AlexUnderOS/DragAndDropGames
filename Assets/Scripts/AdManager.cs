@@ -10,6 +10,9 @@ public class AdManager : MonoBehaviour
     [SerializeField] bool turnOffInterstitialAd = false;
     private bool firstAdShown = false;
 
+    public RewardedAds rewardedAds;
+    [SerializeField] bool turnOffRewardedAds = false;
+
     // .......
 
     public static AdManager Instance { get; private set; }
@@ -39,6 +42,11 @@ public class AdManager : MonoBehaviour
         {
             interstitialAd.OnInterstitialAdReady += HandleInterstitialReady;
             interstitialAd.LoadAd();
+        }
+
+        if (!turnOffRewardedAds)
+        {
+            rewardedAds.LoadAd();
         }
     }
 
@@ -70,16 +78,21 @@ public class AdManager : MonoBehaviour
     private bool firstSceneLoad = false;
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if (rewardedAds == null)
+            rewardedAds = FindFirstObjectByType<RewardedAds>();
+
+        Button rewardedAdButton = GameObject.FindGameObjectWithTag("RewardedButton").GetComponent<Button>();
+
+        if (rewardedAds != null && rewardedAdButton != null)
+            rewardedAds.SetButton(rewardedAdButton);
+
         if (interstitialAd == null)
             interstitialAd = FindFirstObjectByType<InterstitialAd>();
         Button interstitialButton;
         interstitialButton = GameObject.FindGameObjectWithTag("InterstitialAdButton").GetComponent<Button>();
-        if (interstitialButton) {
-  
         if (interstitialAd != null && interstitialButton != null)
         {
             interstitialAd.SetButton(interstitialButton);
-        }
         }
 
         if (!firstSceneLoad)

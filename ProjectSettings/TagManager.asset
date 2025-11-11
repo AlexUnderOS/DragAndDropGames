@@ -18,6 +18,7 @@ TagManager:
   - KillerMashine
   - Mazda
   - InterstitialAdButton
+  - RewardedButton
   layers:
   - Default
   - TransparentFX

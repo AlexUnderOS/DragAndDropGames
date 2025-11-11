@@ -18,7 +18,7 @@ _Šī spēle ir paredzēta bērniem no 6 gadu vecuma. Spēle veicina bērna elas
 - [x] Add flying obstacles with destroy effects
 - [ ] Replace all mouse input with touch
 - [X] Fix camera max zoom
-- [ ] Add interstitial ad
+- [X] Add interstitial ad
 - [ ] Add rewarded ad
 - [ ] Add banner ad
 
