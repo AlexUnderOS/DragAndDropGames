@@ -16,11 +16,11 @@ _Šī spēle ir paredzēta bērniem no 6 gadu vecuma. Spēle veicina bērna elas
 - [X] Create game timer (HH:MM:SS)
 - [X] Add animated clouds, vehicles, people, animals etc.
 - [x] Add flying obstacles with destroy effects
-- [ ] Replace all mouse input with touch
+- [X] Replace all mouse input with touch
 - [X] Fix camera max zoom
 - [X] Add interstitial ad
-- [ ] Add rewarded ad
-- [ ] Add banner ad
+- [X] Add rewarded ad
+- [X] Add banner ad
 
 ## **Līmenis 1**
 <img width="1280" height="718" alt="8" src="https://github.com/user-attachments/assets/3477d6aa-a785-4bc5-b028-ef4a7016aa19" />
