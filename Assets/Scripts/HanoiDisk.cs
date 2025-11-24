@@ -3,7 +3,6 @@
 [RequireComponent(typeof(Collider2D))]
 public class HanoiDisk : MonoBehaviour
 {
-    [Tooltip("0 = самый маленький диск. Чем больше число – тем больше диск.")]
     public int sizeIndex = 0;
 
     private bool isDragging = false;
@@ -12,7 +11,8 @@ public class HanoiDisk : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (HanoiGameManager.Instance == null)
+        if (HanoiGameManager.Instance == null ||
+            !HanoiGameManager.Instance.gameRunning)
             return;
 
         int pegIndex;
@@ -22,7 +22,6 @@ public class HanoiDisk : MonoBehaviour
         isDragging = true;
 
         dragZ = transform.position.z;
-
         var worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         worldPos.z = dragZ;
         dragOffset = transform.position - worldPos;
@@ -46,7 +45,6 @@ public class HanoiDisk : MonoBehaviour
             return;
 
         isDragging = false;
-
         transform.position = new Vector3(transform.position.x, transform.position.y, dragZ);
 
         if (HanoiGameManager.Instance != null)

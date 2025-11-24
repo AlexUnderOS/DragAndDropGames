@@ -89,7 +89,22 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     {
         Debug.Log($"Rewarded ad completed! State: {showCompletionState}");
 
-        StartCoroutine(SlowMoReward(3f, 0.2f));
+        if (showCompletionState == UnityAdsShowCompletionState.COMPLETED)
+        {
+            if (HanoiGameManager.Instance != null)
+            {
+                HanoiGameManager.Instance.RemoveOneDiskReward();
+            }
+            else if (flyingObjectManager != null)
+            {
+            }
+
+            StartCoroutine(SlowMoReward(3f, 0.2f));
+        }
+        else
+        {
+            Time.timeScale = 1f;
+        }
 
         if (_rewardedAdButton != null)
             _rewardedAdButton.interactable = false;
@@ -107,19 +122,21 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         Time.timeScale = 1f;
     }
 
+public void SetButton(Button button)
+{
+    if (button == null)
+        return;
 
-    public void SetButton(Button button)
-    {
-        if (button == null)
-            return;
+    _rewardedAdButton = button;
 
-        _rewardedAdButton = button;
+    _rewardedAdButton.onClick.RemoveAllListeners();
+    _rewardedAdButton.onClick.AddListener(ShowAd);
 
-        _rewardedAdButton.onClick.RemoveAllListeners();
-        _rewardedAdButton.onClick.AddListener(ShowAd);
-
-        _rewardedAdButton.interactable = isLoaded;
-    }
+    _rewardedAdButton.interactable =
+        isLoaded &&
+        HanoiGameManager.Instance != null &&
+        HanoiGameManager.Instance.gameRunning;
+}
 
     public void ShowAd()
     {
