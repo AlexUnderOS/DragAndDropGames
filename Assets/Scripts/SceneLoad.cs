@@ -1,10 +1,8 @@
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class SceneLoad : MonoBehaviour
 {
-
     public void LoadScene(string name)
     {
         SceneManager.LoadScene(name);
@@ -12,9 +10,15 @@ public class SceneLoad : MonoBehaviour
 
     public void LoadWithAd(string targetScene)
     {
-        PlayerPrefs.SetString("NextSceneAfterAd", targetScene);
-        PlayerPrefs.Save();
-        SceneManager.LoadScene("AdScene");
+        if (AdManager.Instance != null)
+        {
+            AdManager.Instance.ShowInterstitialAndThen(targetScene);
+        }
+        else
+        {
+            Debug.LogWarning("AdManager.Instance is null, loading scene without ad.");
+            SceneManager.LoadScene(targetScene);
+        }
     }
 
     public void Exit()

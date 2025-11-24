@@ -1,16 +1,14 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class BBordScript : MonoBehaviour
 {
     public Text timeText;
-    private float startTime;
     private float elapsedTime;
     private bool isRunning = true;
 
     void Start()
     {
-        startTime = Time.realtimeSinceStartup;
         elapsedTime = 0f;
     }
 
@@ -18,7 +16,8 @@ public class BBordScript : MonoBehaviour
     {
         if (!isRunning) return;
 
-        elapsedTime = Time.realtimeSinceStartup - startTime;
+        elapsedTime += Time.deltaTime;
+
         timeText.text = System.TimeSpan.FromSeconds(elapsedTime).ToString("mm':'ss':'ff");
     }
 

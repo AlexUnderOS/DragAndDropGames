@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
 
@@ -6,18 +6,66 @@ public class BannerAd : MonoBehaviour
 {
     [SerializeField] string _androidAdUnitId = "Banner_Android";
     string _adUnitId;
+
     [SerializeField] Button _bannerButton;
-    public bool isBannerVisible = false;
     [SerializeField] BannerPosition _bannerPosition = BannerPosition.BOTTOM_CENTER;
+
+    bool isLoaded = false;
+    bool isVisible = false;
+    bool pendingShow = false;
 
     private void Awake()
     {
         _adUnitId = _androidAdUnitId;
         Advertisement.Banner.SetPosition(_bannerPosition);
+
+        if (_bannerButton != null)
+        {
+            _bannerButton.onClick.RemoveAllListeners();
+            _bannerButton.onClick.AddListener(OnButtonClick);
+            _bannerButton.interactable = true;
+        }
+    }
+
+    public void SetButton(Button button)
+    {
+        if (button == null)
+            return;
+
+        _bannerButton = button;
+
+        _bannerButton.onClick.RemoveAllListeners();
+        _bannerButton.onClick.AddListener(OnButtonClick);
+        _bannerButton.interactable = true;
+
+        Debug.Log("[BannerAd] Banner button hooked: " + _bannerButton.name);
+    }
+
+    private void OnButtonClick()
+    {
+        Debug.Log($"[BannerAd] Button clicked. isLoaded={isLoaded}, isVisible={isVisible}");
+
+        if (isVisible)
+        {
+            HideBanner();
+            return;
+        }
+
+        if (!isLoaded)
+        {
+            Debug.Log("[BannerAd] Banner not loaded yet, loading and will show when ready.");
+            pendingShow = true;
+            LoadBanner();
+            return;
+        }
+
+        ShowBanner();
     }
 
     public void LoadBanner()
     {
+        Debug.Log($"[BannerAd] LoadBanner called. Advertisement.isInitialized={Advertisement.isInitialized}");
+
         if (!Advertisement.isInitialized)
         {
             Debug.LogWarning("Tried to load banner ad before ads was initialized!");
@@ -37,34 +85,35 @@ public class BannerAd : MonoBehaviour
     private void OnBannerLoaded()
     {
         Debug.Log("Banner ad loaded successfully.");
-        _bannerButton.interactable = true;
+        isLoaded = true;
+
+        if (pendingShow)
+        {
+            pendingShow = false;
+            ShowBanner();
+        }
     }
+
     private void OnBannerError(string message)
     {
         Debug.LogWarning($"Banner ad failed to load: {message}");
-        LoadBanner();
+        isLoaded = false;
+        pendingShow = false;
     }
 
-    public void ShowBannerAd()
+    private void ShowBanner()
     {
-        if (isBannerVisible)
+        BannerOptions options = new BannerOptions
         {
-            HideBannerAd();
-        }
-        else
-        {
-            BannerOptions options = new BannerOptions
-            {
-                showCallback = OnBannerShown,
-                hideCallback = OnBannerHidded,
-                clickCallback = OnBannerClicked
-            };
+            showCallback = OnBannerShown,
+            hideCallback = OnBannerHidden,
+            clickCallback = OnBannerClicked
+        };
 
-            Advertisement.Banner.Show(_adUnitId, options);
-        }
+        Advertisement.Banner.Show(_adUnitId, options);
     }
 
-    public void HideBannerAd()
+    private void HideBanner()
     {
         Advertisement.Banner.Hide();
     }
@@ -72,26 +121,17 @@ public class BannerAd : MonoBehaviour
     private void OnBannerShown()
     {
         Debug.Log("Banner ad is now visible.");
-        isBannerVisible = true;
+        isVisible = true;
     }
-    private void OnBannerHidded()
+
+    private void OnBannerHidden()
     {
         Debug.Log("Banner ad is now hidden.");
-        isBannerVisible = false;
+        isVisible = false;
     }
+
     private void OnBannerClicked()
     {
         Debug.Log("Banner ad was clicked.");
-    }
-
-    public void SetButton(Button button) 
-    {
-        if (button == null)
-            return;
-
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(ShowBannerAd);
-        _bannerButton = button;
-        _bannerButton.interactable = false;
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Advertisements;
 using UnityEngine.UI;
@@ -11,11 +11,17 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     [SerializeField] Button _rewardedAdButton;
     public FlyingObjectManager flyingObjectManager;
 
+    private bool isLoaded = false;
+
     public void Awake()
     {
         _adUnitId = _androidAdUnitId;
+
         if (flyingObjectManager == null)
             flyingObjectManager = FindFirstObjectByType<FlyingObjectManager>();
+
+        if (_rewardedAdButton != null)
+            _rewardedAdButton.interactable = false;
     }
 
     public void LoadAd()
@@ -29,18 +35,29 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         Debug.Log("Loading rewarded ad");
         Advertisement.Load(_adUnitId, this);
     }
+
     public void OnUnityAdsAdLoaded(string placementId)
     {
+        if (!placementId.Equals(_adUnitId))
+            return;
+
         Debug.Log("Rewarded ad loaded!");
-        if (placementId.Equals(_adUnitId))
+        isLoaded = true;
+
+        if (_rewardedAdButton != null)
         {
             _rewardedAdButton.interactable = true;
+        }
+        else
+        {
+            Debug.LogWarning("RewardedAds: _rewardedAdButton is null on ad loaded – button will be activated later when SetButton is called.");
         }
     }
 
     public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
     {
-        Debug.Log("Failed to load rewarded ad!");
+        Debug.Log($"Failed to load rewarded ad! {error} - {message}");
+        isLoaded = false;
         StartCoroutine(WaitAndLoad(5f));
     }
 
@@ -52,14 +69,17 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
     public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
     {
-        Debug.Log("Failed to show rewarded ad!");
+        Debug.Log($"Failed to show rewarded ad! {error} - {message}");
+        isLoaded = false;
         StartCoroutine(WaitAndLoad(5f));
+        Time.timeScale = 1f;
     }
 
     public void OnUnityAdsShowStart(string placementId)
     {
         Time.timeScale = 0f;
     }
+
     public void OnUnityAdsShowClick(string placementId)
     {
         Debug.Log("User clicked on rewarded ad");
@@ -67,28 +87,52 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
     public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
     {
-            Debug.Log("Rewarded ad completed!");
-            flyingObjectManager.DestroyAllFlyingObjects();
-            _rewardedAdButton.interactable = false;
-            StartCoroutine(WaitAndLoad(10f));
-        Time.timeScale = 1f;
+        Debug.Log($"Rewarded ad completed! State: {showCompletionState}");
 
+        StartCoroutine(SlowMoReward(3f, 0.2f));
+
+        if (_rewardedAdButton != null)
+            _rewardedAdButton.interactable = false;
+
+        isLoaded = false;
+        StartCoroutine(WaitAndLoad(10f));
     }
+
+    private IEnumerator SlowMoReward(float duration, float targetScale)
+    {
+        Time.timeScale = targetScale;
+
+        yield return new WaitForSecondsRealtime(duration);
+
+        Time.timeScale = 1f;
+    }
+
 
     public void SetButton(Button button)
     {
         if (button == null)
             return;
 
-        button.onClick.RemoveAllListeners();
-        button.onClick.AddListener(ShowAd);
         _rewardedAdButton = button;
-        _rewardedAdButton.interactable = false;
+
+        _rewardedAdButton.onClick.RemoveAllListeners();
+        _rewardedAdButton.onClick.AddListener(ShowAd);
+
+        _rewardedAdButton.interactable = isLoaded;
     }
 
     public void ShowAd()
     {
-        _rewardedAdButton.interactable = false;
+        if (!isLoaded)
+        {
+            Debug.Log("Rewarded ad is not loaded yet, cannot show.");
+            return;
+        }
+
+        if (_rewardedAdButton != null)
+            _rewardedAdButton.interactable = false;
+
+        isLoaded = false;
         Advertisement.Show(_adUnitId, this);
     }
 }

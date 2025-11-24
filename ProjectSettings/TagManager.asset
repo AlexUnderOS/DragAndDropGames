@@ -19,6 +19,7 @@ TagManager:
   - Mazda
   - InterstitialAdButton
   - RewardedButton
+  - BannerButton
   layers:
   - Default
   - TransparentFX

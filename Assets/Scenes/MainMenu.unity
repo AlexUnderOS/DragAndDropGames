@@ -119,6 +119,121 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &35116622
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 35116626}
+  - component: {fileID: 35116625}
+  - component: {fileID: 35116624}
+  - component: {fileID: 35116623}
+  - component: {fileID: 35116627}
+  - component: {fileID: 35116628}
+  m_Layer: 0
+  m_Name: ADS
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &35116623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65d478d2994d9ca4e98fb2978009a322, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidAdUnitId: Interstitial_Android
+  _interstitialAdButton: {fileID: 0}
+  isReady: 1
+--- !u!114 &35116624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 200fd402aba649f4f823bcc2e72e7d62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  adsInitializer: {fileID: 35116625}
+  interstitialAd: {fileID: 35116623}
+  turnOffInterstitialAd: 0
+  rewardedAds: {fileID: 0}
+  turnOffRewardedAds: 0
+  bannerAd: {fileID: 0}
+  turnOffBannerAd: 0
+--- !u!114 &35116625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f25f4b226fee0c4391ab3a3e90d5812, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidGameId: 5979299
+  _testMode: 1
+--- !u!4 &35116626
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1620.6091, y: 65.54636, z: 0.01890619}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &35116627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c2d188e2160bd24fbf044e8a4c09cb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidAdUnitId: Rewarded_Android
+  _rewardedAdButton: {fileID: 0}
+  flyingObjectManager: {fileID: 0}
+--- !u!114 &35116628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 35116622}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b66208f35f527741917c711e6926d57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidAdUnitId: Banner_Android
+  _bannerButton: {fileID: 0}
+  isBannerVisible: 1
+  _bannerPosition: 4
 --- !u!1 &51229605
 GameObject:
   m_ObjectHideFlags: 0
@@ -2048,3 +2163,4 @@ SceneRoots:
   - {fileID: 835420354}
   - {fileID: 1718086963}
   - {fileID: 1215813564}
+  - {fileID: 35116626}
