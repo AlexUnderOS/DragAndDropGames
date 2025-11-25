@@ -2,25 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-// changes for android
 
+// CHANGES FOR ANDROID
 public class CameraScript : MonoBehaviour
 {
-    public float maxZoom = 1000f,
-                 minZoom = 150f;
-    public float punchZoomSpeed = 0.9f,
-                 mouseZoomSpeed = 150f;
+    public float maxZoom = 530f, minZoom = 150f;
+    public float puncZoomSpeed = 0.9f, mouseZoomSpeed = 150f;
     public float mouseFollowSpeed = 1f, touchPanSpeed = 1f;
-    public ScreenBoundriesScript screenBoundriesScript;
+    public ScreenBoundriesScript screenBoundries;
     public Camera cam;
     float startZoom;
     Vector2 lastTouchPos;
-    public int panFingerId = -1;
+    int panFingerId = -1;
     bool isTouchPanning = false;
 
     float lastTapTime = 0f;
     public float doubleTapMaxDelay = 0.4f;
-    public float doubleTapMaxDistabce = 100f;
+    public float doubleTapMaxDistance = 100f;
+
 
     private void Awake()
     {
@@ -28,23 +27,18 @@ public class CameraScript : MonoBehaviour
         {
             cam = GetComponent<Camera>();
         }
-        if (screenBoundriesScript == null)
+
+        if (screenBoundries == null)
         {
-            screenBoundriesScript = FindAnyObjectByType<ScreenBoundriesScript>();
+            screenBoundries = FindFirstObjectByType<ScreenBoundriesScript>();
         }
     }
 
-    Vector3 bottomLeft, topRight;
-    float cameraMaxX, cameraMinX, cameraMaxY, cameraMinY, x, y;
-
-    IEnumerator Start()
+    void Start()
     {
-        yield return null;
-
         startZoom = cam.orthographicSize;
-
-        screenBoundriesScript.RecalculateBounds();
-        transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
+        screenBoundries.RecalculateBounds();
+        transform.position = screenBoundries.GetClampedCameraPosition(transform.position);
     }
 
     // Update is called once per frame
@@ -57,24 +51,17 @@ public class CameraScript : MonoBehaviour
         DesktopFollowCursor();
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (Mathf.Abs(scroll) > Mathf.Epsilon)
-        {
             cam.orthographicSize -= scroll * mouseZoomSpeed;
-        }
 #else
     HandleTouch();
 #endif
 
-        if (Input.touchCount == 2) HandlePinch();
+        if (Input.touchCount == 2)
+            HandlePinch();
 
         cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, minZoom, maxZoom);
-
-        if (Mathf.Approximately(screenBoundriesScript.minY, 0f) &&
-            Mathf.Approximately(screenBoundriesScript.maxY, 0f))
-        {
-            screenBoundriesScript.RecalculateBounds();
-        }
-
-        transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
+        screenBoundries.RecalculateBounds();
+        transform.position = screenBoundries.GetClampedCameraPosition(transform.position);
     }
 
     void DesktopFollowCursor()
@@ -88,26 +75,30 @@ public class CameraScript : MonoBehaviour
         Vector3 targetWorld = cam.ScreenToWorldPoint(screenPoint);
         Vector3 desired = new Vector3(targetWorld.x, targetWorld.y, transform.position.z);
 
+        //Remember to change for slowmotion
         transform.position =
-            Vector3.Lerp(transform.position, desired, mouseFollowSpeed * Time.unscaledDeltaTime);
+            Vector3.Lerp(transform.position, desired, mouseFollowSpeed * Time.deltaTime);
     }
 
     void HandleTouch()
     {
-        if (Input.touchCount != 1) return;
+        if (Input.touchCount != 1)
+            return;
 
         Touch t = Input.GetTouch(0);
 
-        if (IsTouchingUIButton(t.position)) return;
+        if (IsTouchingUIButton(t.position))
+            return;
 
         if (t.phase == TouchPhase.Began)
         {
             float dt = Time.time - lastTapTime;
             if (dt <= doubleTapMaxDelay &&
-                Vector2.Distance(t.position, lastTouchPos) <= doubleTapMaxDistabce)
+                Vector2.Distance(t.position, lastTouchPos) <= doubleTapMaxDistance)
             {
                 StartCoroutine(ResetZoomSmooth());
                 lastTapTime = 0f;
+
             }
             else
             {
@@ -117,6 +108,7 @@ public class CameraScript : MonoBehaviour
             lastTouchPos = t.position;
             panFingerId = t.fingerId;
             isTouchPanning = true;
+
         }
         else if (t.phase == TouchPhase.Moved && isTouchPanning &&
             t.fingerId == panFingerId)
@@ -124,6 +116,7 @@ public class CameraScript : MonoBehaviour
             Vector2 delta = t.position - lastTouchPos;
             transform.Translate(ScreenDeltaToWorldDelta(delta) * touchPanSpeed, Space.World);
             lastTouchPos = t.position;
+
         }
         else if (t.phase == TouchPhase.Ended && t.phase == TouchPhase.Canceled)
         {
@@ -132,7 +125,7 @@ public class CameraScript : MonoBehaviour
         }
     }
 
-    bool IsTouchingUIButton (Vector2 touchPos)
+    bool IsTouchingUIButton(Vector2 touchPos)
     {
         PointerEventData pointerData = new PointerEventData(EventSystem.current);
         pointerData.position = touchPos;
@@ -147,6 +140,7 @@ public class CameraScript : MonoBehaviour
                 return true;
             }
         }
+
         return false;
     }
 
@@ -155,14 +149,16 @@ public class CameraScript : MonoBehaviour
         Touch t0 = Input.GetTouch(0);
         Touch t1 = Input.GetTouch(1);
 
-        float prevDist = (t0.position - t0.deltaPosition - (t1.position - t1.deltaPosition)).magnitude;
+        float prevDist =
+            (t0.position - t0.deltaPosition - (t1.position - t1.deltaPosition)).magnitude;
         float currDist = (t0.position - t1.position).magnitude;
-        cam.orthographicSize -= (currDist - prevDist) * punchZoomSpeed;
+        cam.orthographicSize -= (currDist - prevDist) * puncZoomSpeed;
     }
 
     Vector3 ScreenDeltaToWorldDelta(Vector2 delta)
     {
-        float worldPerPixel = (cam.orthographicSize * 2f) / UnityEngine.Screen.height;
+        float worldPerPixel =
+            (cam.orthographicSize * 2f) / Screen.height;
         return new Vector3(delta.x * worldPerPixel, delta.y * worldPerPixel, 0f);
     }
 
@@ -172,29 +168,18 @@ public class CameraScript : MonoBehaviour
         float elapsed = 0f;
         float initialZoom = cam.orthographicSize;
 
-        float targetZoom = maxZoom;
-
         while (elapsed < duration)
         {
-            elapsed += Time.unscaledDeltaTime;
-            cam.orthographicSize = Mathf.Lerp(initialZoom, targetZoom, elapsed / duration);
-            screenBoundriesScript.RecalculateBounds();
-            transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
+            // Remember to hange for slowmotion
+            elapsed += Time.deltaTime;
+
+            cam.orthographicSize = Mathf.Lerp(initialZoom, startZoom, elapsed / duration);
+            screenBoundries.RecalculateBounds();
+            transform.position = screenBoundries.GetClampedCameraPosition(transform.position);
             yield return null;
         }
-
         cam.orthographicSize = startZoom;
-        screenBoundriesScript.RecalculateBounds();
-        transform.position = screenBoundriesScript.GetClampedCameraPosition(transform.position);
-    }
-
-    void UpdateMaxZoom()
-    {
-        if (screenBoundriesScript == null || cam == null)
-            return;
-        Rect wb = screenBoundriesScript.worldBounds;
-        float maxZoomHeight = wb.height / 2f;
-        float maxZoomWidth = (wb.width / 2f) / cam.aspect;
-        maxZoom = Mathf.Min(maxZoomHeight, maxZoomWidth);
+        screenBoundries.RecalculateBounds();
+        transform.position = screenBoundries.GetClampedCameraPosition(transform.position);
     }
 }
