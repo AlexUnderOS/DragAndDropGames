@@ -1,65 +1,37 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.Advertisements;
-using UnityEngine.UI;
 
 public class BannerAd : MonoBehaviour
 {
     [SerializeField] string _androidAdUnitId = "Banner_Android";
     string _adUnitId;
 
-    [SerializeField] Button _bannerButton;
     [SerializeField] BannerPosition _bannerPosition = BannerPosition.BOTTOM_CENTER;
 
     bool isLoaded = false;
     bool isVisible = false;
-    bool pendingShow = false;
 
     private void Awake()
     {
         _adUnitId = _androidAdUnitId;
         Advertisement.Banner.SetPosition(_bannerPosition);
-
-        if (_bannerButton != null)
-        {
-            _bannerButton.onClick.RemoveAllListeners();
-            _bannerButton.onClick.AddListener(OnButtonClick);
-            _bannerButton.interactable = true;
-        }
     }
 
-    public void SetButton(Button button)
+    private void Start()
     {
-        if (button == null)
-            return;
-
-        _bannerButton = button;
-
-        _bannerButton.onClick.RemoveAllListeners();
-        _bannerButton.onClick.AddListener(OnButtonClick);
-        _bannerButton.interactable = true;
-
-        Debug.Log("[BannerAd] Banner button hooked: " + _bannerButton.name);
+        StartCoroutine(WaitForAdsAndLoad());
     }
 
-    private void OnButtonClick()
+    private IEnumerator WaitForAdsAndLoad()
     {
-        Debug.Log($"[BannerAd] Button clicked. isLoaded={isLoaded}, isVisible={isVisible}");
-
-        if (isVisible)
+        while (!Advertisement.isInitialized)
         {
-            HideBanner();
-            return;
+            Debug.Log("[BannerAd] Waiting for Unity Ads initialization...");
+            yield return null;
         }
 
-        if (!isLoaded)
-        {
-            Debug.Log("[BannerAd] Banner not loaded yet, loading and will show when ready.");
-            pendingShow = true;
-            LoadBanner();
-            return;
-        }
-
-        ShowBanner();
+        LoadBanner();
     }
 
     public void LoadBanner()
@@ -87,22 +59,31 @@ public class BannerAd : MonoBehaviour
         Debug.Log("Banner ad loaded successfully.");
         isLoaded = true;
 
-        if (pendingShow)
-        {
-            pendingShow = false;
-            ShowBanner();
-        }
+        ShowBanner();
     }
 
     private void OnBannerError(string message)
     {
         Debug.LogWarning($"Banner ad failed to load: {message}");
         isLoaded = false;
-        pendingShow = false;
+
+        StartCoroutine(RetryLoad(5f));
     }
 
-    private void ShowBanner()
+    private IEnumerator RetryLoad(float delay)
     {
+        yield return new WaitForSeconds(delay);
+        LoadBanner();
+    }
+
+    public void ShowBanner()
+    {
+        if (!isLoaded)
+        {
+            Debug.LogWarning("Trying to show banner, but it is not loaded yet.");
+            return;
+        }
+
         BannerOptions options = new BannerOptions
         {
             showCallback = OnBannerShown,
@@ -113,7 +94,7 @@ public class BannerAd : MonoBehaviour
         Advertisement.Banner.Show(_adUnitId, options);
     }
 
-    private void HideBanner()
+    public void HideBanner()
     {
         Advertisement.Banner.Hide();
     }

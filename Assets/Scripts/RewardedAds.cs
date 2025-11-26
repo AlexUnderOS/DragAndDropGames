@@ -12,6 +12,7 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
     public FlyingObjectManager flyingObjectManager;
 
     private bool isLoaded = false;
+    public bool IsLoaded => isLoaded;
 
     public void Awake()
     {
@@ -46,6 +47,7 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
 
         if (_rewardedAdButton != null)
         {
+            // Реклама готова → кнопку можно включить
             _rewardedAdButton.interactable = true;
         }
         else
@@ -73,6 +75,9 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         isLoaded = false;
         StartCoroutine(WaitAndLoad(5f));
         Time.timeScale = 1f;
+
+        if (_rewardedAdButton != null)
+            _rewardedAdButton.interactable = false;
     }
 
     public void OnUnityAdsShowStart(string placementId)
@@ -97,6 +102,7 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
             }
             else if (flyingObjectManager != null)
             {
+                // здесь можешь оставить логику для других сцен при желании
             }
 
             StartCoroutine(SlowMoReward(3f, 0.2f));
@@ -106,10 +112,13 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
             Time.timeScale = 1f;
         }
 
+        // После показа эта реклама больше не актуальна
+        isLoaded = false;
+
         if (_rewardedAdButton != null)
             _rewardedAdButton.interactable = false;
 
-        isLoaded = false;
+        // Готовим следующую
         StartCoroutine(WaitAndLoad(10f));
     }
 
@@ -122,21 +131,19 @@ public class RewardedAds : MonoBehaviour, IUnityAdsLoadListener, IUnityAdsShowLi
         Time.timeScale = 1f;
     }
 
-public void SetButton(Button button)
-{
-    if (button == null)
-        return;
+    public void SetButton(Button button)
+    {
+        if (button == null)
+            return;
 
-    _rewardedAdButton = button;
+        _rewardedAdButton = button;
 
-    _rewardedAdButton.onClick.RemoveAllListeners();
-    _rewardedAdButton.onClick.AddListener(ShowAd);
+        _rewardedAdButton.onClick.RemoveAllListeners();
+        _rewardedAdButton.onClick.AddListener(ShowAd);
 
-    _rewardedAdButton.interactable =
-        isLoaded &&
-        HanoiGameManager.Instance != null &&
-        HanoiGameManager.Instance.gameRunning;
-}
+        // Если реклама уже загружена к моменту привязки — сразу активируем кнопку
+        _rewardedAdButton.interactable = isLoaded;
+    }
 
     public void ShowAd()
     {

@@ -80,67 +80,63 @@ public class AdManager : MonoBehaviour
 
     private bool firstSceneLoad = false;
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    rewardedAds = FindFirstObjectByType<RewardedAds>();
+    if (rewardedAds == null)
     {
-        rewardedAds = FindFirstObjectByType<RewardedAds>();
-        if (rewardedAds == null)
+        Debug.Log($"[AdManager] No RewardedAds on scene '{scene.name}'");
+    }
+    else
+    {
+        var rewardedButtonObj = FindGameObjectWithTagSafe("RewardedButton");
+        if (rewardedButtonObj == null)
         {
-            Debug.Log($"[AdManager] No RewardedAds on scene '{scene.name}'");
+            Debug.Log($"[AdManager] No object with tag 'RewardedButton' on scene '{scene.name}'");
         }
         else
         {
-            var rewardedButtonObj = FindGameObjectWithTagSafe("RewardedButton");
-            if (rewardedButtonObj == null)
+            var rewardedAdButton = rewardedButtonObj.GetComponent<Button>();
+            if (rewardedAdButton == null)
             {
-                Debug.Log($"[AdManager] No object with tag 'RewardedButton' on scene '{scene.name}'");
+                Debug.Log("[AdManager] Object with tag 'RewardedButton' has no Button component!");
             }
             else
             {
-                var rewardedAdButton = rewardedButtonObj.GetComponent<Button>();
-                if (rewardedAdButton == null)
-                {
-                    Debug.Log("[AdManager] Object with tag 'RewardedButton' has no Button component!");
-                }
-                else
-                {
-                    rewardedAds.SetButton(rewardedAdButton);
-                    Debug.Log("[AdManager] Rewarded button successfully hooked.");
-                }
+                rewardedAds.SetButton(rewardedAdButton);
+                Debug.Log("[AdManager] Rewarded button successfully hooked.");
             }
         }
 
-        if (bannerAd == null)
-            bannerAd = FindFirstObjectByType<BannerAd>();
-
-        var bannerButtonObj = FindGameObjectWithTagSafe("BannerButton");
-        if (bannerAd != null && bannerButtonObj != null)
+        if (AdsInit.IsInitialized && !turnOffRewardedAds)
         {
-            var bannerButton = bannerButtonObj.GetComponent<Button>();
-            if (bannerButton != null)
-                bannerAd.SetButton(bannerButton);
+            rewardedAds.LoadAd();
         }
-
-        if (interstitialAd == null)
-            interstitialAd = FindFirstObjectByType<InterstitialAd>();
-
-        var interstitialButtonObj = FindGameObjectWithTagSafe("InterstitialAdButton");
-        if (interstitialAd != null && interstitialButtonObj != null)
-        {
-            var interstitialButton = interstitialButtonObj.GetComponent<Button>();
-            if (interstitialButton != null)
-                interstitialAd.SetButton(interstitialButton);
-        }
-
-        if (!firstSceneLoad)
-        {
-            firstSceneLoad = true;
-            Debug.Log("First time scene loaded – не показываем рекламу.");
-            return;
-        }
-
-        Debug.Log("Scene loaded (no auto ad here, используем ручной вызов при переходе).");
     }
 
+    if (bannerAd == null)
+        bannerAd = FindFirstObjectByType<BannerAd>();
+
+    if (interstitialAd == null)
+        interstitialAd = FindFirstObjectByType<InterstitialAd>();
+
+    var interstitialButtonObj = FindGameObjectWithTagSafe("InterstitialAdButton");
+    if (interstitialAd != null && interstitialButtonObj != null)
+    {
+        var interstitialButton = interstitialButtonObj.GetComponent<Button>();
+        if (interstitialButton != null)
+            interstitialAd.SetButton(interstitialButton);
+    }
+
+    if (!firstSceneLoad)
+    {
+        firstSceneLoad = true;
+        Debug.Log("First time scene loaded – не показываем рекламу.");
+        return;
+    }
+
+    Debug.Log("Scene loaded (no auto ad here, используем ручной вызов при переходе).");
+}
     public void ShowInterstitialAndThen(string nextScene)
     {
         if (string.IsNullOrEmpty(nextScene))
