@@ -16,11 +16,6 @@ _Šī spēle ir paredzēta bērniem no 6 gadu vecuma. Spēle veicina bērna elas
 - [X] Create game timer (HH:MM:SS)
 - [X] Add animated clouds, vehicles, people, animals etc.
 - [x] Add flying obstacles with destroy effects
-- [X] Replace all mouse input with touch
-- [X] Fix camera max zoom
-- [X] Add interstitial ad
-- [X] Add rewarded ad
-- [X] Add banner ad
 
 ## **Līmenis 1**
 <img width="1280" height="718" alt="8" src="https://github.com/user-attachments/assets/3477d6aa-a785-4bc5-b028-ef4a7016aa19" />
@@ -68,4 +63,28 @@ Kā izskatās bumba:
 3. Atkarībā no tā, cik ātri tu izieti līmeni, tev piešķirs zvaigznes, jo vairāk zvaigžņu, jo labāks rezultāts (0 zvaigznes nozīmē, ka pārāk ilgi ilga)
 4. Poga, kas mūs atgriež atpakaļ izvēlnē
 5. poga, kas pārstartē līmeni
+
 <hr>
+<hr>
+       
+## **Līmenis 2**
+<img width="1040" height="587" alt="Screenshot 2025-11-26 211517" src="https://github.com/user-attachments/assets/b2830c1d-3c0f-4009-bac3-d5cd7846a3d6" />
+Spēlē Hanojas tornis, lai uzvarētu, ir jāsaliek torniņš no diskiem, lielos diskus nedrīkst likt uz mazajiem.
+<hr>
+
+### Augšējā paneļa
+<img width="1039" height="163" alt="Screenshot 2025-11-26 211627" src="https://github.com/user-attachments/assets/4217b590-3a6b-4c43-8e9b-43c9fa1ab449" />
+
+1. Jebkurā spēles brīdī var iziet uz galveno izvēlni
+2. Lai sāktu spēli, jāizvēlas tās ilgums
+3. Pēc tam jānospiež “Spēlēt”
+4. Konkrētajā laika periodā tiks parādīti katra spēlētāja labākie rezultāti
+<hr>
+
+### Spēle
+<img width="1039" height="583" alt="Screenshot 2025-11-26 211833" src="https://github.com/user-attachments/assets/ec544446-d2b5-4801-b2f9-83d03fb9f812" />
+
+1. Spēles sākums iedarbina taimeri, pēc kura beigām spēle apstājas, mums noteiktā laikā ir jāuzceļ torņi no diskiem uz jebkuru no kolonnām
+2. disku pārvietošana:
+✗  lielos diskus nedrīkst likt uz mazajiem
+✓  augšējo disku var pārvilkt uz tukšu vietu vai uz disku, kas ir lielāks par izvēlēto
