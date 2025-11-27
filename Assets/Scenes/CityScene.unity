@@ -613,7 +613,6 @@ GameObject:
   - component: {fileID: 330955202}
   - component: {fileID: 330955201}
   - component: {fileID: 330955205}
-  - component: {fileID: 330955206}
   m_Layer: 0
   m_Name: ADS
   m_TagString: Untagged
@@ -699,21 +698,6 @@ MonoBehaviour:
   _androidAdUnitId: Rewarded_Android
   _rewardedAdButton: {fileID: 219966980}
   flyingObjectManager: {fileID: 0}
---- !u!114 &330955206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330955200}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b66208f35f527741917c711e6926d57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _androidAdUnitId: Banner_Android
-  _bannerButton: {fileID: 0}
-  _bannerPosition: 4
 --- !u!1 &343216240
 GameObject:
   m_ObjectHideFlags: 0
@@ -8093,6 +8077,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1978130540}
   m_CullTransparentMesh: 1
+--- !u!1 &1983829374
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1983829376}
+  - component: {fileID: 1983829375}
+  m_Layer: 0
+  m_Name: dontshowbanner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1983829375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983829374}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aedae48f367ca3e4b89ca4ed6b84abb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1983829376
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1983829374}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.04825984, y: 0.65526354, z: -10.477739}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1996359287
 GameObject:
   m_ObjectHideFlags: 0
@@ -8623,3 +8651,4 @@ SceneRoots:
   - {fileID: 1741783640}
   - {fileID: 1867007990}
   - {fileID: 330955204}
+  - {fileID: 1983829376}

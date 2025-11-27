@@ -51,13 +51,14 @@ public class DragAndDropScript : MonoBehaviour, IPointerDownHandler, IBeginDragH
         Debug.Log("OnPointerDown");
         objectScr.effects.PlayOneShot(objectScr.audioCli[0]);
 
+        ObjectScript.lastDragged = gameObject;
     }
 
     // CHANGES FOR ANDROID
     public void OnBeginDrag(PointerEventData eventData)
     {
         ObjectScript.drag = true;
-        ObjectScript.lastDragged = eventData.pointerDrag;
+        ObjectScript.lastDragged = gameObject;
         canvasGro.blocksRaycasts = false;
         canvasGro.alpha = 0.6f;
 

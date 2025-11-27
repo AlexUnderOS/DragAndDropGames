@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Advertisements;
+using UnityEngine.SceneManagement;
 
 public class BannerAd : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class BannerAd : MonoBehaviour
 
     bool isLoaded = false;
     bool isVisible = false;
+
+    [SerializeField] string targetSceneName = "HanojasTornisScene";
 
     private void Awake()
     {
@@ -31,7 +34,10 @@ public class BannerAd : MonoBehaviour
             yield return null;
         }
 
-        LoadBanner();
+        if (SceneManager.GetActiveScene().name == targetSceneName)
+        {
+            LoadBanner();
+        }
     }
 
     public void LoadBanner()
@@ -59,7 +65,10 @@ public class BannerAd : MonoBehaviour
         Debug.Log("Banner ad loaded successfully.");
         isLoaded = true;
 
-        ShowBanner();
+        if (SceneManager.GetActiveScene().name == targetSceneName)
+        {
+            ShowBanner();
+        }
     }
 
     private void OnBannerError(string message)
@@ -114,5 +123,27 @@ public class BannerAd : MonoBehaviour
     private void OnBannerClicked()
     {
         Debug.Log("Banner ad was clicked.");
+    }
+
+    private void OnSceneChanged(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != targetSceneName)
+        {
+            HideBanner();
+        }
+        else
+        {
+            LoadBanner();
+        }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneChanged;
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneChanged;
     }
 }

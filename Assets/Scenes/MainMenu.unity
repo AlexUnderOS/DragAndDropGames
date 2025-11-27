@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 35116624}
   - component: {fileID: 35116623}
   - component: {fileID: 35116627}
-  - component: {fileID: 35116628}
   m_Layer: 0
   m_Name: ADS
   m_TagString: Untagged
@@ -218,20 +217,6 @@ MonoBehaviour:
   _androidAdUnitId: Rewarded_Android
   _rewardedAdButton: {fileID: 0}
   flyingObjectManager: {fileID: 0}
---- !u!114 &35116628
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 35116622}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3b66208f35f527741917c711e6926d57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _androidAdUnitId: Banner_Android
-  _bannerPosition: 4
 --- !u!1 &51229605
 GameObject:
   m_ObjectHideFlags: 0
@@ -908,6 +893,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 283906786}
   m_CullTransparentMesh: 1
+--- !u!1 &495202121
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 495202123}
+  - component: {fileID: 495202122}
+  m_Layer: 0
+  m_Name: dontshowbanner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &495202122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495202121}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aedae48f367ca3e4b89ca4ed6b84abb0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &495202123
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 495202121}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.04825984, y: 0.65526354, z: -10.477739}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &503196773
 GameObject:
   m_ObjectHideFlags: 0
@@ -2162,3 +2191,4 @@ SceneRoots:
   - {fileID: 1718086963}
   - {fileID: 1215813564}
   - {fileID: 35116626}
+  - {fileID: 495202123}
